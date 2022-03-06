@@ -104,7 +104,6 @@ def reflection(n,pos_wall):
         prob_tot[i] = (prob_up[i] + prob_down[i])/(2**n)
     return prob_tot
 
-
 distr = qrw(n)
 ptot = 0
 for i in range(2*n):

@@ -105,8 +105,14 @@ def reflection(n,pos_wall):
     return prob_tot
 
 
-plt.plot(positions,qrw(n)[::2])
-print(len(positions),len(qrw(n)[::2]))
+distr = qrw(n)
+ptot = 0
+for i in range(2*n):
+    ptot = ptot+distr[i]
+
+print(ptot)
+plt.plot(positions,distr[::2])
+print(len(positions),len(distr[::2]))
 
 plt.plot(positions,absorption(n,pos_wall)[::2])
 print(len(positions),len(absorption(n,pos_wall)[::2]))

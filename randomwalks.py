@@ -16,7 +16,7 @@ positions = np.arange(-n+pos0,n+1+pos0,2)
 c_up = np.zeros(2*n+1,dtype=complex)
 c_down = np.zeros(2*n+1,dtype=complex)
 
-def walk(n):
+def qrw(n):
     c_up[n] = up_initial
     c_down[n] = down_initial
     for i in range(n):
@@ -40,5 +40,5 @@ def walk(n):
     return prob_tot
 
 
-plt.plot(positions,walk(n)[::2])
-print(len(positions),len(walk(n)[::2]))
+plt.plot(positions,qrw(n)[::2])
+print(len(positions),len(qrw(n)[::2]))

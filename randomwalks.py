@@ -1,3 +1,4 @@
+from scipy.integrate import odeint
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -70,7 +71,7 @@ def reflection(n,pos_wall):
     c_up[n] = up_initial
     c_down[n] = down_initial
     for i in range(n):
-        print(c_up,c_down)
+        #print(c_up,c_down)
         c_up_new = np.zeros(len(c_up),dtype=complex)
         c_down_new = np.zeros(len(c_down),dtype=complex)
         for k in range(2*n):
@@ -80,18 +81,15 @@ def reflection(n,pos_wall):
         for x in range(2*n):
             if pos_wall > 0:
                 if x == n+pos_wall:
-                    c_up[x-1]=c_up[x-1]+c_up_new[x]
-                    c_down[x-1]=c_down[x-1]+c_down_new[x]
+                    c_up[x-2]=c_up[x-2]-c_up_new[x]
+                    c_down[x-2]=c_down[x-2]-c_down_new[x]
                 else:
                     c_up[x] = c_up_new[x]
                     c_down[x] = c_down_new[x]
             if pos_wall < 0:
                 if x == n+pos_wall:
-                    c_up[x+1]=c_up[x+1]+c_up_new[x]
-                    c_down[x+1]=c_down[x+1]+c_down_new[x]
-                elif x == n+pos_wall+1:
-                    c_up[x] = c_up[x]+c_up_new[x]
-                    c_down[x] = c_down[x]+c_down_new[x]
+                    c_up[x+2]=c_up[x+2]-c_up_new[x]
+                    c_down[x+2]=c_down[x+2]-c_down_new[x]
                 else:
                     c_up[x] = c_up_new[x]
                     c_down[x] = c_down_new[x]
@@ -103,6 +101,52 @@ def reflection(n,pos_wall):
         prob_down[i] = np.abs(c_down[i])**2
         prob_tot[i] = (prob_up[i] + prob_down[i])/(2**n)
     return prob_tot
+
+d = 2
+jumprate = 1
+k = 1
+
+#make Mab matrix for formula (2) of Childs
+def bintree(n,jumprate,k):
+    matrix = np.zeros((2**(n+1)+2**n-2,2**(n+1)+2**n-2))
+    for i in range(0,len(matrix)):
+        matrix[i,i] = jumprate
+        if i <= 2**n-2:
+            matrix[i,2*(i+1)-1] = -k*jumprate
+            matrix[i,2*(i+1)] = -k*jumprate
+            matrix[2*(i+1)-1,i] = -k*jumprate
+            matrix[2*(i+1),i] = -k*jumprate
+            matrix[-(i+1),-2*(i+1)-1] = -k*jumprate
+            matrix[-(i+1),-2*(i+1)] = -k*jumprate
+            matrix[-2*(i+1)-1,-(i+1)] = -k*jumprate
+            matrix[-2*(i+1),-(i+1)] = -k*jumprate   
+    return matrix
+
+print(bintree(d,jumprate,k))
+
+d = 6
+gamma = 1
+
+def reductionmatrix(n,gamma):
+    matrix = np.zeros((2*n+1,2*n+1))
+    for i in range(2*n+1):
+        if i == 0:
+            matrix[i,i] = 2*gamma
+            matrix[i,i+1] = -2*gamma
+        elif i == n:
+            matrix[i,i] = 2*gamma
+            matrix[i,i+1] = -2*gamma
+            matrix[i,i-1] = -2*gamma
+        elif i == 2*n:
+            matrix[i,i] = 2*gamma
+            matrix[i,i-1] = -2*gamma
+        else:
+            matrix[i,i] = 3*gamma
+            matrix[i,i+1] = -2*gamma
+            matrix[i,i-1] = -2*gamma
+    return matrix
+
+print(reductionmatrix(d,gamma))
 
 distr = qrw(n)
 ptot = 0
